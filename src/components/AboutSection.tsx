@@ -66,7 +66,7 @@ export const AboutSection = () => {
 
         {/* IEEE Badge */}
         <div className="mt-12 flex justify-center">
-          <div className="glass-card glow-border px-8 py-4">
+          <div className="glass-card glow-border px-8 py-4 rounded-none">
             <span className="text-sm md:text-base font-display text-primary tracking-widest">
               POWERED BY IEEE SB SJCET
             </span>

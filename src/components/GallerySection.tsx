@@ -68,7 +68,7 @@ export const GallerySection = () => {
             <button
               onClick={loadMore}
               disabled={loading}
-              className="glass-card glow-button px-8 py-4 font-mono text-primary hover:border-primary/50 transition-all duration-300 disabled:opacity-50"
+              className="glass-card glow-button px-8 py-4 font-mono text-primary hover:border-primary/50 transition-all duration-300 disabled:opacity-50 rounded-none"
             >
               {loading ? (
                 <span>

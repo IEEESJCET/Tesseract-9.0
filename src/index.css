@@ -106,13 +106,13 @@
 @layer components {
   /* Glassmorphism Card */
   .glass-card {
-    @apply bg-card/80 backdrop-blur-sm border border-border rounded-lg;
+    @apply bg-card/80 backdrop-blur-sm border border-border rounded-none;
     box-shadow: var(--shadow-card), inset 0 1px 0 hsl(var(--border) / 0.5);
   }
 
   /* Terminal Card */
   .terminal-card {
-    @apply bg-card border border-border rounded-lg overflow-hidden;
+    @apply bg-card border border-border rounded-none overflow-hidden;
     box-shadow: var(--shadow-card);
   }
 
@@ -239,7 +239,8 @@
 
   /* Gallery Image */
   .gallery-image {
-    @apply glass-card overflow-hidden aspect-video relative;
+    /* Use glass-card styling but remove rounded corners for a sharp, square border */
+    @apply glass-card overflow-hidden aspect-video relative rounded-none;
   }
 
   .gallery-image img {

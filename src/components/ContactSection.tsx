@@ -34,7 +34,7 @@ export const ContactSection = () => {
         {/* Contact Cards Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {contacts.map((contact, index) => (
-            <div key={index} className="terminal-card">
+            <div key={index} className="terminal-card rounded-none">
               {/* Terminal Header */}
               <div className="terminal-header">
                 <span className="terminal-dot-red" />
