@@ -5,25 +5,25 @@ const links = [
     icon: Globe,
     title: 'IEEE SB SJCET',
     subtitle: 'Official Website',
-    href: '#',
+    href: 'https://ieee.sjcetpalai.ac.in/',
   },
   {
     icon: Instagram,
     title: 'INSTAGRAM',
     subtitle: '@ieee_sb_sjcet',
-    href: 'https://instagram.com/ieee_sb_sjcet',
+    href: 'https://www.instagram.com/ieeesbsjcet/',
   },
   {
     icon: Linkedin,
     title: 'LINKEDIN',
     subtitle: 'IEEE SB SJCET',
-    href: 'https://linkedin.com/company/ieee-sb-sjcet',
+    href: 'https://www.linkedin.com/in/ieee-sb-sjcet-palai-2a0a3a1a6/',
   },
   {
     icon: Mail,
     title: 'EMAIL',
     subtitle: 'contact@ieeesbsjcet.org',
-    href: 'mailto:contact@ieeesbsjcet.org',
+    href: 'mailto:contact@ieeesbsjcet@gmail.com',
   },
 ];
 

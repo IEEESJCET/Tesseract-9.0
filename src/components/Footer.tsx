@@ -1,5 +1,4 @@
 import { Heart } from 'lucide-react';
-import { TesseractLogo } from './TesseractLogo';
 
 export const Footer = () => {
   return (
@@ -9,8 +8,8 @@ export const Footer = () => {
 
       <div className="container mx-auto max-w-4xl relative z-10">
         <div className="flex flex-col items-center gap-6">
-          {/* Logo */}
-          <TesseractLogo className="w-12 h-12 text-primary opacity-50" />
+          {/* Logo (static image from public/) */}
+          <img src="/tesseractlogo.png" alt="Tesseract 9.0 logo" className="w-12 h-12 opacity-50 object-contain" />
 
           {/* Event Name */}
           <p className="font-display text-sm text-muted-foreground tracking-widest text-center">
