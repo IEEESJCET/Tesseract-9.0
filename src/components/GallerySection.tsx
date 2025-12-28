@@ -1,25 +1,17 @@
 import { useState } from 'react';
 
 const galleryImages = [
-  { id: 'IMG_01', placeholder: true },
-  { id: 'IMG_02', placeholder: true },
-  { id: 'IMG_03', placeholder: true },
-  { id: 'IMG_04', placeholder: true },
-  { id: 'IMG_05', placeholder: true },
-  { id: 'IMG_06', placeholder: true },
+  { id: 'img1', src: '/gallery/img8.webp' },
+  { id: 'img2', src: '/gallery/tess7_2.jpg' },
+  { id: 'img3', src: '/gallery/tess7_4.jpg' },
+  { id: 'img4', src: '/gallery/img5.webp' },
+  { id: 'img5', src: '/gallery/img7.webp' },
+  { id: 'img6', src: '/gallery/tess7_1.jpg' },
 ];
 
 export const GallerySection = () => {
-  const [visibleImages, setVisibleImages] = useState(4);
-  const [loading, setLoading] = useState(false);
-
-  const loadMore = () => {
-    setLoading(true);
-    setTimeout(() => {
-      setVisibleImages((prev) => Math.min(prev + 2, galleryImages.length));
-      setLoading(false);
-    }, 1000);
-  };
+  // show all uploaded gallery images
+  const [visibleImages] = useState(galleryImages.length);
 
   return (
     <section id="gallery" className="py-20 px-4 relative">
@@ -38,52 +30,27 @@ export const GallerySection = () => {
         </p>
 
         {/* Gallery Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
           {galleryImages.slice(0, visibleImages).map((image, index) => (
             <div
               key={image.id}
-              className="gallery-image animate-fade-in"
-              style={{ animationDelay: `${index * 0.1}s` }}
+              className="gallery-image animate-fade-in bg-card overflow-hidden rounded-none"
+              style={{ animationDelay: `${index * 0.05}s` }}
             >
-              {/* Placeholder */}
-              <div className="w-full h-full bg-secondary/50 flex items-center justify-center">
-                <span className="text-muted-foreground font-mono text-sm">
-                  Loading...
-                </span>
-              </div>
+              <img
+                src={image.src}
+                alt={image.id}
+                className="w-full h-56 md:h-48 lg:h-64 object-cover block rounded-none"
+              />
 
-              {/* Image Label */}
-              <div className="gallery-label">
-                <span className="text-primary font-mono text-sm">
-                  {image.id}
-                </span>
+              <div className="gallery-label absolute bottom-2 left-2 bg-background/60 px-2 py-1 rounded-sm">
+                <span className="text-primary font-mono text-xs">{image.id}</span>
               </div>
             </div>
           ))}
         </div>
 
-        {/* Load More Button */}
-        {visibleImages < galleryImages.length && (
-          <div className="mt-12 flex justify-center">
-            <button
-              onClick={loadMore}
-              disabled={loading}
-              className="glass-card glow-button px-8 py-4 font-mono text-primary hover:border-primary/50 transition-all duration-300 disabled:opacity-50 rounded-none"
-            >
-              {loading ? (
-                <span>
-                  <span className="text-primary">&gt;</span> Loading
-                  <span className="animate-blink">...</span>
-                </span>
-              ) : (
-                <span>
-                  <span className="text-primary">&gt;</span> More memories
-                  loading
-                </span>
-              )}
-            </button>
-          </div>
-        )}
+        {/* All images are displayed */}
       </div>
     </section>
   );
