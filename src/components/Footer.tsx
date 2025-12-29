@@ -23,10 +23,10 @@ export const Footer = () => {
             by IEEE SB SJCET
           </p>
 
-          {/* Copyright */}
+          {/* Copyright
           <p className="text-xs text-muted-foreground/60">
             © {new Date().getFullYear()} IEEE SB SJCET. All rights reserved.
-          </p>
+          </p> */}
         </div>
       </div>
     </footer>
