@@ -65,9 +65,9 @@ export const GallerySection = () => {
                 className="w-full h-56 md:h-48 lg:h-64 object-cover block rounded-none"
               />
 
-              <div className="gallery-label absolute bottom-2 left-2 bg-background/60 px-2 py-1 rounded-sm">
+              {/* <div className="gallery-label absolute bottom-2 left-2 bg-background/60 px-2 py-1 rounded-sm">
                 <span className="text-primary font-mono text-xs">{image.id}</span>
-              </div>
+              </div> */}
             </div>
           ))}
         </div>
