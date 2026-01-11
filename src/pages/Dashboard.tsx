@@ -193,18 +193,18 @@ const Dashboard = () => {
                   {tickets.map((ticket) => (
                     <div
                       key={ticket.id}
-                      className="flex items-center justify-between p-4 bg-background border border-border rounded hover:border-primary/50 transition-colors"
+                      className="p-4 bg-background border border-border rounded hover:border-primary/50 transition-colors"
                     >
-                      <div className="flex items-center gap-3 min-w-0">
-                        <Ticket className="w-5 h-5 text-primary/60 flex-shrink-0" />
-                        <div className="min-w-0">
-                          <h4 className="font-display text-primary truncate">{ticket.title}</h4>
+                      <div className="flex items-start gap-3 mb-3">
+                        <Ticket className="w-5 h-5 text-primary/60 flex-shrink-0 mt-0.5" />
+                        <div className="flex-1">
+                          <h4 className="font-display text-primary">{ticket.title}</h4>
                           {ticket.description && (
-                            <p className="text-xs text-muted-foreground font-mono truncate">{ticket.description}</p>
+                            <p className="text-xs text-muted-foreground font-mono mt-1">{ticket.description}</p>
                           )}
                         </div>
                       </div>
-                      <div className="flex items-center gap-4 flex-shrink-0">
+                      <div className="flex items-center justify-between">
                         <span className="text-primary font-display font-bold">
                           {ticket.price > 0 ? `₹${ticket.price}` : 'FREE'}
                         </span>
