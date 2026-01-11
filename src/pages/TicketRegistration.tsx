@@ -7,10 +7,50 @@ import { Navigation } from '@/components/Navigation';
 import { Footer } from '@/components/Footer';
 import type { Ticket, FormField } from '@/types';
 
+// Environment variables
+const RAZORPAY_KEY_ID = import.meta.env.VITE_RAZORPAY_KEY_ID;
+const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL;
+const SUPABASE_ANON_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY;
+
+// Extend Window interface for Razorpay
+declare global {
+    interface Window {
+        Razorpay: new (options: RazorpayOptions) => RazorpayInstance;
+    }
+}
+
+interface RazorpayOptions {
+    key: string;
+    amount: number;
+    currency: string;
+    order_id: string;
+    name: string;
+    description: string;
+    prefill?: {
+        name?: string;
+        email?: string;
+        contact?: string;
+    };
+    handler: (response: RazorpayResponse) => void;
+    theme?: { color: string };
+    modal?: { ondismiss: () => void };
+}
+
+interface RazorpayInstance {
+    open: () => void;
+    on: (event: string, handler: (response: { error: { description: string } }) => void) => void;
+}
+
+interface RazorpayResponse {
+    razorpay_payment_id: string;
+    razorpay_order_id: string;
+    razorpay_signature: string;
+}
+
 const TicketRegistration = () => {
     const { ticketId } = useParams<{ ticketId: string }>();
     const navigate = useNavigate();
-    const { user, profile, loading: authLoading } = useAuth();
+    const { user, profile, session, loading: authLoading } = useAuth();
     const { toast } = useToast();
 
     const [ticket, setTicket] = useState<Ticket | null>(null);
@@ -59,6 +99,155 @@ const TicketRegistration = () => {
 
     const handleInputChange = (fieldId: string, value: unknown) => {
         setFormData((prev) => ({ ...prev, [fieldId]: value }));
+    };
+
+    // Generate 10-digit alphanumeric registration ID
+    const generateRegistrationId = () => {
+        const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+        let result = '';
+        for (let i = 0; i < 10; i++) {
+            result += chars.charAt(Math.floor(Math.random() * chars.length));
+        }
+        return result;
+    };
+
+    // Load Razorpay SDK dynamically
+    const loadRazorpay = (): Promise<boolean> => {
+        return new Promise((resolve) => {
+            if (window.Razorpay) {
+                resolve(true);
+                return;
+            }
+            const script = document.createElement('script');
+            script.src = 'https://checkout.razorpay.com/v1/checkout.js';
+            script.onload = () => resolve(true);
+            script.onerror = () => resolve(false);
+            document.body.appendChild(script);
+        });
+    };
+
+    // Handle payment flow
+    const handlePayment = async (registrationId: string, registrationUUID: string) => {
+        if (!ticket || !user) return;
+
+        try {
+            // Load Razorpay SDK
+            const loaded = await loadRazorpay();
+            if (!loaded) {
+                throw new Error('Failed to load payment gateway');
+            }
+
+            // Get current session token for Edge Function auth
+            const accessToken = session?.access_token;
+            if (!accessToken) {
+                throw new Error('No valid session. Please log in again.');
+            }
+
+            // Create order via Edge Function
+            const orderRes = await fetch(`${SUPABASE_URL}/functions/v1/create-order`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${accessToken}`,
+                    'apikey': SUPABASE_ANON_KEY,
+                },
+                body: JSON.stringify({
+                    amount: ticket.price,
+                    user_id: user.id,
+                    registration_id: registrationUUID,
+                }),
+            });
+
+            const orderData = await orderRes.json();
+            if (!orderData.success) {
+                throw new Error(orderData.error || 'Failed to create order');
+            }
+
+            // Open Razorpay checkout
+            const options: RazorpayOptions = {
+                key: RAZORPAY_KEY_ID,
+                amount: orderData.amount,
+                currency: orderData.currency,
+                order_id: orderData.order_id,
+                name: 'TESSERACT 9.0',
+                description: `Registration for ${ticket.title}`,
+                prefill: {
+                    name: profile?.full_name || '',
+                    email: profile?.email || '',
+                    contact: profile?.phone || '',
+                },
+                handler: async (response: RazorpayResponse) => {
+                    try {
+                        // Verify payment via Edge Function
+                        const verifyRes = await fetch(`${SUPABASE_URL}/functions/v1/verify-payment`, {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'Authorization': `Bearer ${accessToken}`,
+                                'apikey': SUPABASE_ANON_KEY,
+                            },
+                            body: JSON.stringify({
+                                razorpay_order_id: orderData.order_id,
+                                razorpay_payment_id: response.razorpay_payment_id,
+                                razorpay_signature: response.razorpay_signature,
+                                registration_id: registrationUUID,
+                            }),
+                        });
+
+                        const verifyData = await verifyRes.json();
+                        if (!verifyData.success) {
+                            throw new Error(verifyData.error || 'Payment verification failed');
+                        }
+
+                        toast({
+                            title: 'Payment Successful!',
+                            description: `Your registration ID is ${registrationId}`,
+                        });
+                        navigate('/dashboard');
+                    } catch (error) {
+                        console.error('Payment verification error:', error);
+                        toast({
+                            title: 'Verification Error',
+                            description: error instanceof Error ? error.message : 'Payment verification failed',
+                            variant: 'destructive',
+                        });
+                    } finally {
+                        setSubmitting(false);
+                    }
+                },
+                theme: { color: '#00ff88' },
+                modal: {
+                    ondismiss: () => {
+                        toast({
+                            title: 'Payment Cancelled',
+                            description: 'You can retry payment from your dashboard.',
+                        });
+                        setSubmitting(false);
+                        navigate('/dashboard');
+                    },
+                },
+            };
+
+            const razorpay = new window.Razorpay(options);
+            razorpay.on('payment.failed', (response) => {
+                toast({
+                    title: 'Payment Failed',
+                    description: response.error.description,
+                    variant: 'destructive',
+                });
+                setSubmitting(false);
+            });
+            razorpay.open();
+
+        } catch (error) {
+            console.error('Payment error:', error);
+            toast({
+                title: 'Payment Error',
+                description: error instanceof Error ? error.message : 'Failed to initiate payment',
+                variant: 'destructive',
+            });
+            setSubmitting(false);
+        }
     };
 
     const handleSubmit = async (e: React.FormEvent) => {
@@ -115,33 +304,61 @@ const TicketRegistration = () => {
             }
         }
 
-        // Generate 10-digit alphanumeric registration ID
-        const generateRegistrationId = () => {
-            const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
-            let result = '';
-            for (let i = 0; i < 10; i++) {
-                result += chars.charAt(Math.floor(Math.random() * chars.length));
-            }
-            return result;
-        };
+        const registrationId = generateRegistrationId();
 
-        const { error } = await supabase.from('registrations').insert({
-            user_id: user.id,
-            ticket_id: ticket.id,
-            form_data: formData,
-            status: 'pending',
-            referred_by: validReferralCode,
-            registration_id: generateRegistrationId(),
-        });
+        // Determine if this is a free or paid ticket
+        const isFreeTicket = ticket.price === 0;
 
-        if (error) {
-            toast({ title: 'Error', description: error.message, variant: 'destructive' });
-        } else {
-            toast({ title: 'Success', description: 'Registration submitted successfully!' });
-            navigate('/dashboard');
+        // Verify profile exists in database before creating registration
+        const { data: profileCheck, error: profileError } = await supabase
+            .from('profiles')
+            .select('id')
+            .eq('id', user.id)
+            .single();
+
+        if (profileError || !profileCheck) {
+            console.error('Profile verification failed:', profileError);
+            toast({
+                title: 'Profile Error',
+                description: 'Your profile was not found. Please try logging out and back in.',
+                variant: 'destructive',
+            });
+            setSubmitting(false);
+            return;
         }
 
-        setSubmitting(false);
+        // Create registration
+        const { data: registrationData, error } = await supabase
+            .from('registrations')
+            .insert({
+                user_id: user.id,
+                ticket_id: ticket.id,
+                form_data: formData,
+                status: isFreeTicket ? 'confirmed' : 'pending',
+                referred_by: validReferralCode,
+                registration_id: registrationId,
+            })
+            .select('id')
+            .single();
+
+        if (error || !registrationData) {
+            toast({ title: 'Error', description: error?.message || 'Failed to create registration', variant: 'destructive' });
+            setSubmitting(false);
+            return;
+        }
+
+        // If free ticket, complete immediately
+        if (isFreeTicket) {
+            toast({
+                title: 'Registration Successful!',
+                description: `Your registration ID is ${registrationId}`,
+            });
+            navigate('/dashboard');
+            return;
+        }
+
+        // For paid tickets, initiate payment
+        await handlePayment(registrationId, registrationData.id);
     };
 
     const renderField = (field: FormField) => {
@@ -303,7 +520,7 @@ const TicketRegistration = () => {
                                     disabled={submitting}
                                     className="w-full glow-button bg-primary text-background py-3 font-display font-bold tracking-wider rounded hover:scale-[1.02] transition-transform disabled:opacity-50 disabled:cursor-not-allowed mt-4"
                                 >
-                                    {submitting ? 'SUBMITTING...' : 'REGISTER'}
+                                    {submitting ? 'PROCESSING...' : ticket.price > 0 ? 'PROCEED TO PAYMENT' : 'REGISTER NOW'}
                                 </button>
                             </form>
                         </div>

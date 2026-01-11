@@ -1,7 +1,7 @@
 import { ReactNode, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
-import { LayoutDashboard, Ticket, Users, LogOut, Home, Share2, Menu, X, QrCode } from 'lucide-react';
+import { LayoutDashboard, Ticket, Users, LogOut, Home, Share2, Menu, X, QrCode, UtensilsCrossed } from 'lucide-react';
 
 interface AdminLayoutProps {
   children: ReactNode;
@@ -12,7 +12,8 @@ const navItems = [
   { href: '/admin/tickets', label: 'Tickets', icon: Ticket },
   { href: '/admin/registrations', label: 'Registrations', icon: Users },
   { href: '/admin/referrals', label: 'Referrals', icon: Share2 },
-  { href: '/admin/checkin', label: 'Check-in', icon: QrCode },
+  { href: '/admin/coupons', label: 'Coupons', icon: UtensilsCrossed },
+  { href: '/admin/checkin', label: 'Scanners', icon: QrCode },
 ];
 
 export const AdminLayout = ({ children }: AdminLayoutProps) => {

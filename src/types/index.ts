@@ -30,6 +30,8 @@ export interface Registration {
     checked_in: boolean;
     checked_in_at: string | null;
     checked_in_by: string | null;
+    razorpay_order_id?: string | null;
+    razorpay_payment_id?: string | null;
     created_at: string;
     ticket?: Ticket;
     profile?: {
@@ -49,4 +51,21 @@ export interface Profile {
     is_volunteer: boolean;
     created_at?: string;
     updated_at?: string;
+}
+
+export interface FoodCoupon {
+    id: string;
+    name: string;
+    ticket_ids: string[];
+    quantity: number;
+    is_active: boolean;
+    created_at: string;
+}
+
+export interface CouponConsumption {
+    id: string;
+    registration_id: string;
+    coupon_id: string;
+    consumed_at: string;
+    consumed_by: string | null;
 }

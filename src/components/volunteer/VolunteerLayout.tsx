@@ -8,7 +8,7 @@ interface VolunteerLayoutProps {
 }
 
 const navItems = [
-    { href: '/volunteer', label: 'Check-in', icon: QrCode },
+    { href: '/volunteer', label: 'Scanners', icon: QrCode },
     { href: '/volunteer/participants', label: 'Participants', icon: Users },
 ];
 
@@ -61,8 +61,8 @@ export const VolunteerLayout = ({ children }: VolunteerLayoutProps) => {
                                 to={item.href}
                                 onClick={closeSidebar}
                                 className={`flex items-center gap-3 px-3 py-2 rounded font-mono text-sm transition-colors ${isActive
-                                        ? 'bg-primary text-background'
-                                        : 'text-primary/70 hover:bg-secondary/50 hover:text-primary'
+                                    ? 'bg-primary text-background'
+                                    : 'text-primary/70 hover:bg-secondary/50 hover:text-primary'
                                     }`}
                             >
                                 <Icon className="w-4 h-4" />
