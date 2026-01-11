@@ -98,7 +98,7 @@ export const Countdown = () => {
       </div>
 
       {/* Countdown Timer */}
-      <div className="flex gap-4 md:gap-8 justify-center flex-wrap w-full">
+      <div className="flex gap-2 md:gap-8 justify-center w-full">
         {timeBlocks.map((block, index) => (
           <div key={block.label} className="countdown-box glow-border">
             <span className="countdown-number font-display">
