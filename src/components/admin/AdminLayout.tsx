@@ -1,7 +1,7 @@
 import { ReactNode } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
-import { LayoutDashboard, Ticket, Users, LogOut, Home } from 'lucide-react';
+import { LayoutDashboard, Ticket, Users, LogOut, Home, Share2 } from 'lucide-react';
 
 interface AdminLayoutProps {
   children: ReactNode;
@@ -11,6 +11,7 @@ const navItems = [
   { href: '/admin', label: 'Dashboard', icon: LayoutDashboard },
   { href: '/admin/tickets', label: 'Tickets', icon: Ticket },
   { href: '/admin/registrations', label: 'Registrations', icon: Users },
+  { href: '/admin/referrals', label: 'Referrals', icon: Share2 },
 ];
 
 export const AdminLayout = ({ children }: AdminLayoutProps) => {
@@ -38,11 +39,10 @@ export const AdminLayout = ({ children }: AdminLayoutProps) => {
               <Link
                 key={item.href}
                 to={item.href}
-                className={`flex items-center gap-3 px-3 py-2 rounded font-mono text-sm transition-colors ${
-                  isActive
+                className={`flex items-center gap-3 px-3 py-2 rounded font-mono text-sm transition-colors ${isActive
                     ? 'bg-primary text-background'
                     : 'text-primary/70 hover:bg-secondary/50 hover:text-primary'
-                }`}
+                  }`}
               >
                 <Icon className="w-4 h-4" />
                 {item.label}

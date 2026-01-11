@@ -17,6 +17,7 @@ const TicketRegistration = () => {
     const [loading, setLoading] = useState(true);
     const [submitting, setSubmitting] = useState(false);
     const [formData, setFormData] = useState<Record<string, unknown>>({});
+    const [referralCode, setReferralCode] = useState('');
 
     useEffect(() => {
         if (!authLoading && !user) {
@@ -81,11 +82,45 @@ const TicketRegistration = () => {
 
         setSubmitting(true);
 
+        // Validate referral code if provided
+        let validReferralCode: string | null = null;
+        if (referralCode.trim()) {
+            const { data: referrer, error: refError } = await supabase
+                .from('profiles')
+                .select('id')
+                .eq('referral_code', referralCode.trim())
+                .maybeSingle();
+
+            if (refError) {
+                console.error('Referral validation error:', refError);
+                toast({
+                    title: 'Validation Error',
+                    description: 'Could not validate referral code. Please try again.',
+                    variant: 'destructive',
+                });
+                setSubmitting(false);
+                return;
+            }
+
+            if (referrer) {
+                validReferralCode = referralCode.trim();
+            } else {
+                toast({
+                    title: 'Invalid Referral Code',
+                    description: 'The referral code you entered does not exist.',
+                    variant: 'destructive',
+                });
+                setSubmitting(false);
+                return;
+            }
+        }
+
         const { error } = await supabase.from('registrations').insert({
             user_id: user.id,
             ticket_id: ticket.id,
             form_data: formData,
             status: 'pending',
+            referred_by: validReferralCode,
         });
 
         if (error) {
@@ -226,6 +261,24 @@ const TicketRegistration = () => {
                                         {renderField(field)}
                                     </div>
                                 ))}
+
+                                {/* Referral Code Input */}
+                                <div className="pt-4 border-t border-border">
+                                    <label className="block text-sm text-primary/80 font-mono mb-2">
+                                        REFERRAL CODE (OPTIONAL)
+                                    </label>
+                                    <input
+                                        type="text"
+                                        value={referralCode}
+                                        onChange={(e) => setReferralCode(e.target.value.toUpperCase())}
+                                        placeholder="Enter 5-digit referral code"
+                                        maxLength={5}
+                                        className="w-full bg-background border border-border rounded px-4 py-3 text-primary font-mono placeholder:text-muted-foreground focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-colors tracking-widest"
+                                    />
+                                    <p className="text-xs text-muted-foreground font-mono mt-1">
+                                        Have a friend's referral code? Enter it here.
+                                    </p>
+                                </div>
 
                                 {ticket.price > 0 && (
                                     <div className="flex justify-between items-center py-4 border-t border-border">

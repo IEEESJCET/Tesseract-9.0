@@ -25,6 +25,7 @@ export interface Registration {
     ticket_id: string;
     form_data: Record<string, unknown>;
     status: 'pending' | 'confirmed' | 'cancelled';
+    referred_by: string | null;
     created_at: string;
     ticket?: Ticket;
     profile?: {
@@ -39,6 +40,7 @@ export interface Profile {
     full_name: string;
     email: string;
     phone: string;
+    referral_code: string | null;
     is_admin: boolean;
     created_at?: string;
     updated_at?: string;

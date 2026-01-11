@@ -80,6 +80,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
                             full_name: currentSession.user.user_metadata?.full_name || currentSession.user.user_metadata?.name || '',
                             email: currentSession.user.email || '',
                             phone: currentSession.user.user_metadata?.phone || '',
+                            referral_code: null,
                             is_admin: false,
                         });
                     }

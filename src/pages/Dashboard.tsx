@@ -1,19 +1,22 @@
 import { useState, useEffect } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
+import { useNavigate, Link, useLocation } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/lib/supabase';
 import { Navigation } from '@/components/Navigation';
 import { Footer } from '@/components/Footer';
 import { PhoneDialog } from '@/components/PhoneDialog';
-import { LogOut, User, Phone, Mail, Ticket, Settings } from 'lucide-react';
+import { LogOut, User, Phone, Mail, Ticket, Settings, Share2, Copy, Check } from 'lucide-react';
 import type { Ticket as TicketType, Registration } from '@/types';
 
 const Dashboard = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const { user, profile, loading, signOut, isAdmin } = useAuth();
   const [showPhoneDialog, setShowPhoneDialog] = useState(false);
   const [tickets, setTickets] = useState<TicketType[]>([]);
   const [registrations, setRegistrations] = useState<Registration[]>([]);
+  const [referralCount, setReferralCount] = useState(0);
+  const [copied, setCopied] = useState(false);
   const [dataLoading, setDataLoading] = useState(true);
 
   useEffect(() => {
@@ -48,6 +51,30 @@ const Dashboard = () => {
 
     if (user) fetchData();
   }, [user]);
+
+  // Fetch referral count - runs on every navigation to dashboard
+  useEffect(() => {
+    const fetchReferralCount = async () => {
+      if (!profile?.referral_code) return;
+
+      const { count } = await supabase
+        .from('registrations')
+        .select('id', { count: 'exact', head: true })
+        .eq('referred_by', profile.referral_code);
+
+      setReferralCount(count || 0);
+    };
+
+    fetchReferralCount();
+  }, [profile?.referral_code, location.key]);
+
+  const copyReferralCode = () => {
+    if (profile?.referral_code) {
+      navigator.clipboard.writeText(profile.referral_code);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    }
+  };
 
   const handleSignOut = async () => {
     await signOut();
@@ -156,7 +183,7 @@ const Dashboard = () => {
 
             <div className="p-6">
               <h3 className="text-lg font-display text-primary mb-4">AVAILABLE TICKETS</h3>
-              
+
               {dataLoading ? (
                 <div className="text-muted-foreground font-mono text-sm animate-pulse">Loading...</div>
               ) : tickets.length === 0 ? (
@@ -208,7 +235,7 @@ const Dashboard = () => {
 
             <div className="p-6">
               <h3 className="text-lg font-display text-primary mb-4">MY REGISTRATIONS</h3>
-              
+
               {dataLoading ? (
                 <div className="text-muted-foreground font-mono text-sm animate-pulse">Loading...</div>
               ) : registrations.length === 0 ? (
@@ -227,13 +254,12 @@ const Dashboard = () => {
                         </p>
                       </div>
                       <span
-                        className={`text-xs px-2 py-1 rounded font-mono ${
-                          reg.status === 'confirmed'
-                            ? 'bg-green-500/20 text-green-500'
-                            : reg.status === 'cancelled'
+                        className={`text-xs px-2 py-1 rounded font-mono ${reg.status === 'confirmed'
+                          ? 'bg-green-500/20 text-green-500'
+                          : reg.status === 'cancelled'
                             ? 'bg-red-500/20 text-red-500'
                             : 'bg-yellow-500/20 text-yellow-500'
-                        }`}
+                          }`}
                       >
                         {reg.status.toUpperCase()}
                       </span>
@@ -241,6 +267,58 @@ const Dashboard = () => {
                   ))}
                 </div>
               )}
+            </div>
+          </div>
+
+          {/* Referrals Section */}
+          <div className="terminal-card">
+            <div className="terminal-header">
+              <span className="terminal-dot terminal-dot-red" />
+              <span className="terminal-dot terminal-dot-yellow" />
+              <span className="terminal-dot terminal-dot-green" />
+              <span className="text-xs text-muted-foreground ml-2 font-mono">
+                referrals://code
+              </span>
+            </div>
+
+            <div className="p-6">
+              <div className="flex items-center gap-2 mb-4">
+                <Share2 className="w-5 h-5 text-primary" />
+                <h3 className="text-lg font-display text-primary">YOUR REFERRAL CODE</h3>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="p-4 bg-background border border-border rounded">
+                  <span className="text-xs text-muted-foreground font-mono block mb-2">REFERRAL CODE</span>
+                  <div className="flex items-center gap-2">
+                    <span className="text-2xl font-display font-bold text-primary tracking-widest">
+                      {profile?.referral_code || '-----'}
+                    </span>
+                    <button
+                      onClick={copyReferralCode}
+                      className="p-2 hover:bg-secondary/50 rounded transition-colors"
+                      title="Copy code"
+                    >
+                      {copied ? (
+                        <Check className="w-4 h-4 text-green-500" />
+                      ) : (
+                        <Copy className="w-4 h-4 text-muted-foreground" />
+                      )}
+                    </button>
+                  </div>
+                </div>
+
+                <div className="p-4 bg-background border border-border rounded">
+                  <span className="text-xs text-muted-foreground font-mono block mb-2">TOTAL REFERRALS</span>
+                  <span className="text-2xl font-display font-bold text-primary">
+                    {referralCount}
+                  </span>
+                </div>
+              </div>
+
+              <p className="text-xs text-muted-foreground font-mono mt-4">
+                Share your referral code with friends. When they use it during registration, you'll see them in your referral count!
+              </p>
             </div>
           </div>
         </div>
