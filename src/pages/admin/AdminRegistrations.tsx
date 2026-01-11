@@ -168,7 +168,7 @@ const AdminRegistrations = () => {
         }
 
         // Build headers
-        const baseHeaders = ['Name', 'Email', 'Phone', 'College', 'Ticket', 'Status', 'Date'];
+        const baseHeaders = ['Name', 'Email', 'Phone', 'College', 'Ticket', 'Status', 'Check-in', 'Referred By', 'Date'];
 
         // Get all unique form field keys and their labels
         const formFieldMap = new Map<string, string>();
@@ -191,6 +191,8 @@ const AdminRegistrations = () => {
                 getCollegeFromFormData(reg),
                 reg.ticket?.title || '',
                 reg.status,
+                reg.checked_in ? 'Yes' : 'No',
+                reg.referred_by || '',
                 new Date(reg.created_at).toLocaleDateString(),
             ];
 
@@ -311,6 +313,7 @@ const AdminRegistrations = () => {
                                         <SortHeader field="college" label="College" />
                                         <SortHeader field="ticket.title" label="Ticket" />
                                         <SortHeader field="status" label="Status" />
+                                        <th className="px-4 py-3 text-left text-xs font-mono text-primary/80 uppercase tracking-wider">Check-in</th>
                                         <SortHeader field="created_at" label="Date" />
                                     </tr>
                                 </thead>
@@ -361,25 +364,69 @@ const AdminRegistrations = () => {
                                                         {reg.status.toUpperCase()}
                                                     </span>
                                                 </td>
+                                                <td className="px-4 py-3">
+                                                    {reg.checked_in ? (
+                                                        <span className="inline-flex items-center gap-1 text-xs px-2 py-0.5 rounded font-mono bg-green-500/20 text-green-500">
+                                                            ✓ CHECKED IN
+                                                        </span>
+                                                    ) : (
+                                                        <span className="text-xs px-2 py-0.5 rounded font-mono bg-secondary/30 text-muted-foreground">
+                                                            —
+                                                        </span>
+                                                    )}
+                                                </td>
                                                 <td className="px-4 py-3 text-sm font-mono text-muted-foreground">
                                                     {new Date(reg.created_at).toLocaleDateString()}
                                                 </td>
                                             </tr>
-                                            {expandedRows.has(reg.id) && Object.keys(reg.form_data || {}).length > 0 && (
+                                            {expandedRows.has(reg.id) && (
                                                 <tr key={`${reg.id}-details`}>
-                                                    <td colSpan={9} className="px-4 py-4 bg-secondary/10">
-                                                        <div className="text-xs font-mono text-muted-foreground mb-2">
-                                                            CUSTOM FORM DATA
-                                                        </div>
-                                                        <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
-                                                            {Object.entries(reg.form_data || {}).map(([key, value]) => (
-                                                                <div key={key} className="bg-background p-2 rounded border border-border">
-                                                                    <span className="text-xs text-muted-foreground block">{getFieldLabel(reg.ticket, key)}</span>
-                                                                    <span className="text-sm text-primary font-mono">
-                                                                        {typeof value === 'boolean' ? (value ? 'Yes' : 'No') : String(value)}
-                                                                    </span>
+                                                    <td colSpan={10} className="px-4 py-4 bg-secondary/10">
+                                                        <div className="space-y-4">
+                                                            {/* Referred By Section */}
+                                                            {reg.referred_by && (
+                                                                <div>
+                                                                    <div className="text-xs font-mono text-muted-foreground mb-2">
+                                                                        REFERRED BY
+                                                                    </div>
+                                                                    <div className="bg-background p-2 rounded border border-border inline-block">
+                                                                        <span className="text-sm text-primary font-mono">{reg.referred_by}</span>
+                                                                    </div>
                                                                 </div>
-                                                            ))}
+                                                            )}
+
+                                                            {/* Check-in Details */}
+                                                            {reg.checked_in && reg.checked_in_at && (
+                                                                <div>
+                                                                    <div className="text-xs font-mono text-muted-foreground mb-2">
+                                                                        CHECK-IN DETAILS
+                                                                    </div>
+                                                                    <div className="bg-background p-2 rounded border border-green-500/30 inline-block">
+                                                                        <span className="text-sm text-green-500 font-mono">
+                                                                            Checked in at {new Date(reg.checked_in_at).toLocaleString()}
+                                                                        </span>
+                                                                    </div>
+                                                                </div>
+                                                            )}
+
+                                                            {/* Custom Form Data */}
+                                                            {Object.keys(reg.form_data || {}).length > 0 && (
+                                                                <div>
+                                                                    <div className="text-xs font-mono text-muted-foreground mb-2">
+                                                                        CUSTOM FORM DATA
+                                                                    </div>
+                                                                    <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+                                                                        {Object.entries(reg.form_data || {}).map(([key, value]) => (
+                                                                            <div key={key} className="bg-background p-2 rounded border border-border">
+                                                                                <span className="text-xs text-muted-foreground block">{getFieldLabel(reg.ticket, key)}</span>
+                                                                                <span className="text-sm text-primary font-mono">
+                                                                                    {typeof value === 'boolean' ? (value ? 'Yes' : 'No') : String(value)}
+                                                                                </span>
+                                                                            </div>
+                                                                        ))}
+                                                                    </div>
+                                                                </div>
+                                                            )}
                                                         </div>
                                                     </td>
                                                 </tr>

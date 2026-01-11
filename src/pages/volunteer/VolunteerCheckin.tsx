@@ -117,21 +117,21 @@ const VolunteerCheckin = () => {
                 {!scannedParticipant && !loading && (
                     <div className="space-y-6">
                         {/* Manual Entry */}
-                        <div className="terminal-card p-6">
+                        <div className="terminal-card p-4 sm:p-6">
                             <h3 className="text-sm font-mono text-muted-foreground mb-3">MANUAL ENTRY</h3>
-                            <form onSubmit={(e) => { e.preventDefault(); if (manualId.trim()) handleScan(manualId.trim().toUpperCase()); }} className="flex gap-3">
+                            <form onSubmit={(e) => { e.preventDefault(); if (manualId.trim()) handleScan(manualId.trim().toUpperCase()); }} className="flex flex-col sm:flex-row gap-3">
                                 <input
                                     type="text"
                                     value={manualId}
                                     onChange={(e) => setManualId(e.target.value.toUpperCase())}
-                                    placeholder="Enter Registration ID (e.g. ABC123XYZ0)"
-                                    className="flex-1 bg-background border border-border rounded px-4 py-3 text-primary font-mono tracking-wider focus:border-primary uppercase"
+                                    placeholder="Enter Registration ID"
+                                    className="flex-1 bg-background border border-border rounded px-4 py-3 text-primary font-mono tracking-wider focus:border-primary uppercase text-center sm:text-left"
                                     maxLength={10}
                                 />
                                 <button
                                     type="submit"
                                     disabled={!manualId.trim()}
-                                    className="flex items-center gap-2 bg-primary text-background px-6 py-3 font-display font-bold rounded hover:scale-105 transition-transform disabled:opacity-50"
+                                    className="flex items-center justify-center gap-2 bg-primary text-background px-6 py-3 font-display font-bold rounded hover:scale-105 transition-transform disabled:opacity-50"
                                 >
                                     <Search className="w-5 h-5" />
                                     Lookup
@@ -140,7 +140,7 @@ const VolunteerCheckin = () => {
                         </div>
 
                         {/* QR Scanner */}
-                        <div className="terminal-card p-6">
+                        <div className="terminal-card p-4 sm:p-6">
                             <h3 className="text-sm font-mono text-muted-foreground mb-3">OR SCAN QR CODE</h3>
                             <QRScanner onScan={handleScan} />
                         </div>
@@ -208,10 +208,10 @@ const VolunteerCheckin = () => {
                                 </button>
                             </div>
                         ) : (
-                            <div className="flex justify-center gap-4">
+                            <div className="flex flex-col sm:flex-row justify-center gap-3 sm:gap-4">
                                 <button
                                     onClick={handleCancel}
-                                    className="flex items-center gap-2 px-6 py-3 border border-border text-muted-foreground rounded font-mono hover:bg-secondary/50"
+                                    className="flex items-center justify-center gap-2 px-6 py-3 border border-border text-muted-foreground rounded font-mono hover:bg-secondary/50 order-2 sm:order-1"
                                 >
                                     <XCircle className="w-5 h-5" />
                                     Cancel
@@ -219,7 +219,7 @@ const VolunteerCheckin = () => {
                                 <button
                                     onClick={handleConfirmCheckin}
                                     disabled={checkingIn}
-                                    className="flex items-center gap-2 bg-green-500 text-white px-6 py-3 font-display font-bold rounded hover:scale-105 transition-transform disabled:opacity-50"
+                                    className="flex items-center justify-center gap-2 bg-green-500 text-white px-6 py-3 font-display font-bold rounded hover:scale-105 transition-transform disabled:opacity-50 order-1 sm:order-2"
                                 >
                                     <CheckCircle className="w-5 h-5" />
                                     {checkingIn ? 'Checking In...' : 'Confirm Check-In'}
