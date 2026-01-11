@@ -16,12 +16,12 @@ export const Footer = () => {
             TESSERACT 9.0 – Annual Flagship Event of IEEE SB SJCET
           </p>
 
-          {/* Created With Love */}
+          {/* Created With Love
           <p className="flex items-center gap-2 text-sm text-muted-foreground">
             Created with{' '}
             <Heart className="w-4 h-4 text-red-500 fill-red-500 animate-pulse" />{' '}
             by IEEE SB SJCET
-          </p>
+          </p> */}
 
           {/* Copyright
           <p className="text-xs text-muted-foreground/60">
