@@ -1,7 +1,7 @@
-import { ReactNode } from 'react';
+import { ReactNode, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
-import { LayoutDashboard, Ticket, Users, LogOut, Home, Share2 } from 'lucide-react';
+import { LayoutDashboard, Ticket, Users, LogOut, Home, Share2, Menu, X, QrCode } from 'lucide-react';
 
 interface AdminLayoutProps {
   children: ReactNode;
@@ -12,23 +12,46 @@ const navItems = [
   { href: '/admin/tickets', label: 'Tickets', icon: Ticket },
   { href: '/admin/registrations', label: 'Registrations', icon: Users },
   { href: '/admin/referrals', label: 'Referrals', icon: Share2 },
+  { href: '/admin/checkin', label: 'Check-in', icon: QrCode },
 ];
 
 export const AdminLayout = ({ children }: AdminLayoutProps) => {
   const { profile, signOut } = useAuth();
   const location = useLocation();
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+
+  const closeSidebar = () => setSidebarOpen(false);
 
   return (
     <div className="min-h-screen bg-background flex">
+      {/* Mobile Overlay */}
+      {sidebarOpen && (
+        <div
+          className="fixed inset-0 bg-black/50 z-40 lg:hidden"
+          onClick={closeSidebar}
+        />
+      )}
+
       {/* Sidebar */}
-      <aside className="w-64 bg-card border-r border-border flex flex-col">
-        <div className="p-4 border-b border-border">
-          <Link to="/" className="flex items-center gap-2">
-            <span className="text-xl font-display font-bold text-primary glow-text tracking-wider">
-              TESSERACT
-            </span>
-          </Link>
-          <span className="text-xs text-muted-foreground font-mono">Admin Panel</span>
+      <aside
+        className={`fixed lg:static inset-y-0 left-0 z-50 w-64 bg-card border-r border-border flex flex-col transform transition-transform duration-300 ease-in-out ${sidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'
+          }`}
+      >
+        <div className="p-4 border-b border-border flex items-center justify-between">
+          <div>
+            <Link to="/" className="flex items-center gap-2" onClick={closeSidebar}>
+              <span className="text-xl font-display font-bold text-primary glow-text tracking-wider">
+                TESSERACT
+              </span>
+            </Link>
+            <span className="text-xs text-muted-foreground font-mono">Admin Panel</span>
+          </div>
+          <button
+            onClick={closeSidebar}
+            className="lg:hidden p-2 text-primary hover:bg-secondary/50 rounded"
+          >
+            <X className="w-5 h-5" />
+          </button>
         </div>
 
         <nav className="flex-1 p-4 space-y-2">
@@ -39,6 +62,7 @@ export const AdminLayout = ({ children }: AdminLayoutProps) => {
               <Link
                 key={item.href}
                 to={item.href}
+                onClick={closeSidebar}
                 className={`flex items-center gap-3 px-3 py-2 rounded font-mono text-sm transition-colors ${isActive
                     ? 'bg-primary text-background'
                     : 'text-primary/70 hover:bg-secondary/50 hover:text-primary'
@@ -54,13 +78,17 @@ export const AdminLayout = ({ children }: AdminLayoutProps) => {
         <div className="p-4 border-t border-border space-y-2">
           <Link
             to="/"
+            onClick={closeSidebar}
             className="flex items-center gap-3 px-3 py-2 rounded font-mono text-sm text-primary/70 hover:bg-secondary/50 hover:text-primary transition-colors"
           >
             <Home className="w-4 h-4" />
             Back to Site
           </Link>
           <button
-            onClick={signOut}
+            onClick={() => {
+              closeSidebar();
+              signOut();
+            }}
             className="w-full flex items-center gap-3 px-3 py-2 rounded font-mono text-sm text-destructive hover:bg-destructive/10 transition-colors"
           >
             <LogOut className="w-4 h-4" />
@@ -70,11 +98,19 @@ export const AdminLayout = ({ children }: AdminLayoutProps) => {
       </aside>
 
       {/* Main Content */}
-      <main className="flex-1 flex flex-col">
-        <header className="h-16 bg-card border-b border-border flex items-center justify-between px-6">
-          <h1 className="text-lg font-display text-primary">Admin Panel</h1>
+      <main className="flex-1 flex flex-col min-w-0">
+        <header className="h-16 bg-card border-b border-border flex items-center justify-between px-4 lg:px-6">
           <div className="flex items-center gap-3">
-            <span className="text-sm text-muted-foreground font-mono">
+            <button
+              onClick={() => setSidebarOpen(true)}
+              className="lg:hidden p-2 text-primary hover:bg-secondary/50 rounded"
+            >
+              <Menu className="w-5 h-5" />
+            </button>
+            <h1 className="text-lg font-display text-primary">Admin Panel</h1>
+          </div>
+          <div className="flex items-center gap-2 lg:gap-3">
+            <span className="text-sm text-muted-foreground font-mono hidden sm:block">
               {profile?.full_name || profile?.email}
             </span>
             <div className="w-8 h-8 rounded-full bg-primary/20 border border-primary/50 flex items-center justify-center">
@@ -85,7 +121,7 @@ export const AdminLayout = ({ children }: AdminLayoutProps) => {
           </div>
         </header>
 
-        <div className="flex-1 p-6 overflow-auto">
+        <div className="flex-1 p-4 lg:p-6 overflow-auto">
           {children}
         </div>
       </main>

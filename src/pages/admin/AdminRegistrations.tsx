@@ -52,7 +52,7 @@ const AdminRegistrations = () => {
         const [registrationsRes, ticketsRes] = await Promise.all([
             supabase
                 .from('registrations')
-                .select('*, ticket:tickets(*), profile:profiles(full_name, email, phone)')
+                .select('*, ticket:tickets(*), profile:profiles!fk_registrations_profile(full_name, email, phone)')
                 .order('created_at', { ascending: false }),
             supabase.from('tickets').select('*'),
         ]);
@@ -235,7 +235,7 @@ const AdminRegistrations = () => {
     return (
         <AdminLayout>
             <div className="space-y-6">
-                <div className="flex items-center justify-between">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                     <div>
                         <h2 className="text-2xl font-display text-primary glow-text tracking-wider">
                             REGISTRATIONS
@@ -246,7 +246,7 @@ const AdminRegistrations = () => {
                     </div>
                     <button
                         onClick={exportToCSV}
-                        className="flex items-center gap-2 bg-primary text-background px-4 py-2 font-display font-bold rounded hover:scale-105 transition-transform"
+                        className="flex items-center justify-center gap-2 bg-primary text-background px-4 py-2 font-display font-bold rounded hover:scale-105 transition-transform"
                     >
                         <Download className="w-4 h-4" />
                         EXPORT CSV
@@ -304,6 +304,7 @@ const AdminRegistrations = () => {
                                 <thead className="bg-secondary/30 border-b border-border">
                                     <tr>
                                         <th className="w-10"></th>
+                                        <th className="px-4 py-3 text-left text-xs font-mono text-primary/80 uppercase tracking-wider">Reg ID</th>
                                         <SortHeader field="profile.full_name" label="Name" />
                                         <SortHeader field="profile.email" label="Email" />
                                         <th className="px-4 py-3 text-left text-xs font-mono text-primary/80 uppercase tracking-wider">Phone</th>
@@ -329,6 +330,9 @@ const AdminRegistrations = () => {
                                                             <ChevronDown className="w-4 h-4 text-muted-foreground" />
                                                         )
                                                     )}
+                                                </td>
+                                                <td className="px-4 py-3 text-sm font-mono text-primary">
+                                                    {reg.registration_id || '-'}
                                                 </td>
                                                 <td className="px-4 py-3 text-sm font-mono text-primary">
                                                     {reg.profile?.full_name || '-'}
@@ -363,7 +367,7 @@ const AdminRegistrations = () => {
                                             </tr>
                                             {expandedRows.has(reg.id) && Object.keys(reg.form_data || {}).length > 0 && (
                                                 <tr key={`${reg.id}-details`}>
-                                                    <td colSpan={8} className="px-4 py-4 bg-secondary/10">
+                                                    <td colSpan={9} className="px-4 py-4 bg-secondary/10">
                                                         <div className="text-xs font-mono text-muted-foreground mb-2">
                                                             CUSTOM FORM DATA
                                                         </div>

@@ -100,7 +100,7 @@ const AdminReferrals = () => {
 
             const { data, error } = await supabase
                 .from('registrations')
-                .select('id, created_at, user_id, ticket:tickets(title), profile:profiles(full_name, phone)')
+                .select('id, created_at, user_id, ticket:tickets(title), profile:profiles!fk_registrations_profile(full_name, phone)')
                 .eq('referred_by', referralCode);
 
             if (error) {
@@ -222,9 +222,9 @@ const AdminReferrals = () => {
                                                                     {(referredPeople[user.id] || []).map((person) => (
                                                                         <div
                                                                             key={person.id}
-                                                                            className="flex items-center justify-between p-3 bg-background border border-border rounded"
+                                                                            className="flex flex-col sm:flex-row sm:items-center justify-between p-3 bg-background border border-border rounded gap-2"
                                                                         >
-                                                                            <div className="flex-1">
+                                                                            <div>
                                                                                 <span className="text-sm font-mono text-primary">
                                                                                     {person.full_name}
                                                                                 </span>
@@ -232,7 +232,7 @@ const AdminReferrals = () => {
                                                                                     {person.phone}
                                                                                 </span>
                                                                             </div>
-                                                                            <div className="text-right">
+                                                                            <div className="sm:text-right">
                                                                                 <span className="text-xs text-muted-foreground font-mono">
                                                                                     {person.ticket_title}
                                                                                 </span>

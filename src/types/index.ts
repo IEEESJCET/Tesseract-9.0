@@ -23,9 +23,13 @@ export interface Registration {
     id: string;
     user_id: string;
     ticket_id: string;
+    registration_id: string | null;
     form_data: Record<string, unknown>;
     status: 'pending' | 'confirmed' | 'cancelled';
     referred_by: string | null;
+    checked_in: boolean;
+    checked_in_at: string | null;
+    checked_in_by: string | null;
     created_at: string;
     ticket?: Ticket;
     profile?: {
@@ -42,6 +46,7 @@ export interface Profile {
     phone: string;
     referral_code: string | null;
     is_admin: boolean;
+    is_volunteer: boolean;
     created_at?: string;
     updated_at?: string;
 }

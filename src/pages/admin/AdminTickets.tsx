@@ -1,9 +1,10 @@
 import { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
 import { AdminLayout } from '@/components/admin/AdminLayout';
 import { supabase } from '@/lib/supabase';
 import { useToast } from '@/hooks/use-toast';
 import type { Ticket, FormField } from '@/types';
-import { Plus, Edit2, Trash2, Power, X } from 'lucide-react';
+import { Plus, Edit2, Trash2, Power, X, Image } from 'lucide-react';
 import {
   Dialog,
   DialogContent,
@@ -170,7 +171,7 @@ const AdminTickets = () => {
   return (
     <AdminLayout>
       <div className="space-y-6">
-        <div className="flex items-center justify-between">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div>
             <h2 className="text-2xl font-display text-primary glow-text tracking-wider">
               TICKETS
@@ -181,7 +182,7 @@ const AdminTickets = () => {
           </div>
           <button
             onClick={openCreateDialog}
-            className="flex items-center gap-2 bg-primary text-background px-4 py-2 font-display font-bold rounded hover:scale-105 transition-transform"
+            className="flex items-center justify-center gap-2 bg-primary text-background px-4 py-2 font-display font-bold rounded hover:scale-105 transition-transform"
           >
             <Plus className="w-4 h-4" />
             NEW TICKET
@@ -199,51 +200,56 @@ const AdminTickets = () => {
             {tickets.map((ticket) => (
               <div
                 key={ticket.id}
-                className={`terminal-card p-4 flex items-center justify-between ${
-                  !ticket.is_active ? 'opacity-60' : ''
-                }`}
+                className={`terminal-card p-4 ${!ticket.is_active ? 'opacity-60' : ''}`}
               >
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-center gap-3">
-                    <h3 className="font-display text-primary truncate">{ticket.title}</h3>
-                    <span
-                      className={`text-xs px-2 py-0.5 rounded font-mono ${
-                        ticket.is_active
-                          ? 'bg-green-500/20 text-green-500'
-                          : 'bg-red-500/20 text-red-500'
-                      }`}
-                    >
-                      {ticket.is_active ? 'ACTIVE' : 'INACTIVE'}
-                    </span>
+                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+                  <div className="flex-1 min-w-0">
+                    <div className="flex flex-wrap items-center gap-2">
+                      <h3 className="font-display text-primary">{ticket.title}</h3>
+                      <span
+                        className={`text-xs px-2 py-0.5 rounded font-mono ${ticket.is_active
+                            ? 'bg-green-500/20 text-green-500'
+                            : 'bg-red-500/20 text-red-500'
+                          }`}
+                      >
+                        {ticket.is_active ? 'ACTIVE' : 'INACTIVE'}
+                      </span>
+                    </div>
+                    <p className="text-sm text-muted-foreground font-mono mt-1">
+                      ₹{ticket.price} • {ticket.form_fields?.length || 0} custom fields
+                    </p>
                   </div>
-                  <p className="text-sm text-muted-foreground font-mono mt-1 truncate">
-                    ₹{ticket.price} • {ticket.form_fields?.length || 0} custom fields
-                  </p>
-                </div>
-                <div className="flex items-center gap-2">
-                  <button
-                    onClick={() => handleToggleActive(ticket)}
-                    className={`p-2 rounded hover:bg-secondary/50 transition-colors ${
-                      ticket.is_active ? 'text-green-500' : 'text-muted-foreground'
-                    }`}
-                    title={ticket.is_active ? 'Deactivate' : 'Activate'}
-                  >
-                    <Power className="w-4 h-4" />
-                  </button>
-                  <button
-                    onClick={() => openEditDialog(ticket)}
-                    className="p-2 rounded hover:bg-secondary/50 transition-colors text-primary"
-                    title="Edit"
-                  >
-                    <Edit2 className="w-4 h-4" />
-                  </button>
-                  <button
-                    onClick={() => handleDelete(ticket)}
-                    className="p-2 rounded hover:bg-secondary/50 transition-colors text-destructive"
-                    title="Delete"
-                  >
-                    <Trash2 className="w-4 h-4" />
-                  </button>
+                  <div className="flex items-center gap-2">
+                    <Link
+                      to={`/admin/tickets/${ticket.id}/template`}
+                      className="p-2 rounded hover:bg-secondary/50 transition-colors text-primary"
+                      title="Edit Ticket Template"
+                    >
+                      <Image className="w-4 h-4" />
+                    </Link>
+                    <button
+                      onClick={() => handleToggleActive(ticket)}
+                      className={`p-2 rounded hover:bg-secondary/50 transition-colors ${ticket.is_active ? 'text-green-500' : 'text-muted-foreground'
+                        }`}
+                      title={ticket.is_active ? 'Deactivate' : 'Activate'}
+                    >
+                      <Power className="w-4 h-4" />
+                    </button>
+                    <button
+                      onClick={() => openEditDialog(ticket)}
+                      className="p-2 rounded hover:bg-secondary/50 transition-colors text-primary"
+                      title="Edit"
+                    >
+                      <Edit2 className="w-4 h-4" />
+                    </button>
+                    <button
+                      onClick={() => handleDelete(ticket)}
+                      className="p-2 rounded hover:bg-secondary/50 transition-colors text-destructive"
+                      title="Delete"
+                    >
+                      <Trash2 className="w-4 h-4" />
+                    </button>
+                  </div>
                 </div>
               </div>
             ))}
@@ -252,7 +258,7 @@ const AdminTickets = () => {
       </div>
 
       <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
-        <DialogContent className="terminal-card border-primary/30 max-w-2xl max-h-[90vh] overflow-y-auto">
+        <DialogContent className="terminal-card border-primary/30 max-w-2xl max-h-[90vh] overflow-y-auto mx-4">
           <DialogHeader>
             <DialogTitle className="text-xl font-display text-primary tracking-wider">
               {editingTicket.id ? 'EDIT TICKET' : 'CREATE TICKET'}
@@ -281,7 +287,7 @@ const AdminTickets = () => {
               />
             </div>
 
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
                 <label className="block text-sm text-primary/80 font-mono mb-2">PRICE (₹)</label>
                 <input

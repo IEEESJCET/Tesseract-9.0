@@ -5,19 +5,25 @@ import { supabase } from '@/lib/supabase';
 import { Navigation } from '@/components/Navigation';
 import { Footer } from '@/components/Footer';
 import { PhoneDialog } from '@/components/PhoneDialog';
-import { LogOut, User, Phone, Mail, Ticket, Settings, Share2, Copy, Check } from 'lucide-react';
+import { LogOut, User, Phone, Mail, Ticket, Settings, Share2, Copy, Check, Download, Eye, X, QrCode } from 'lucide-react';
+import { generateTicketDataUrl, downloadBlob, generateTicketImage, type TicketTemplate, type TicketData } from '@/lib/ticketGenerator';
+import { useToast } from '@/hooks/use-toast';
 import type { Ticket as TicketType, Registration } from '@/types';
 
 const Dashboard = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const { user, profile, loading, signOut, isAdmin } = useAuth();
+  const { toast } = useToast();
+  const { user, profile, loading, signOut, isAdmin, isVolunteer } = useAuth();
   const [showPhoneDialog, setShowPhoneDialog] = useState(false);
   const [tickets, setTickets] = useState<TicketType[]>([]);
   const [registrations, setRegistrations] = useState<Registration[]>([]);
   const [referralCount, setReferralCount] = useState(0);
   const [copied, setCopied] = useState(false);
   const [dataLoading, setDataLoading] = useState(true);
+  const [ticketPreview, setTicketPreview] = useState<string | null>(null);
+  const [ticketLoading, setTicketLoading] = useState(false);
+  const [currentTicketData, setCurrentTicketData] = useState<{ template: TicketTemplate, data: TicketData } | null>(null);
 
   useEffect(() => {
     if (!loading && !user) {
@@ -85,6 +91,73 @@ const Dashboard = () => {
     setShowPhoneDialog(false);
   };
 
+  const handleViewTicket = async (reg: Registration) => {
+    if (!reg.registration_id || !reg.ticket_id) return;
+
+    setTicketLoading(true);
+
+    try {
+      // Fetch ticket template
+      const { data: template, error } = await supabase
+        .from('ticket_templates')
+        .select('*')
+        .eq('ticket_id', reg.ticket_id)
+        .single();
+
+      if (error || !template) {
+        toast({
+          title: 'No Template',
+          description: 'No ticket template has been created for this event yet.',
+          variant: 'destructive',
+        });
+        setTicketLoading(false);
+        return;
+      }
+
+      const ticketData: TicketData = {
+        user_name: profile?.full_name || 'User',
+        ticket_name: reg.ticket?.title || 'Event',
+        registration_id: reg.registration_id,
+        date: new Date(reg.created_at).toLocaleDateString(),
+      };
+
+      const previewUrl = await generateTicketDataUrl(template, ticketData);
+      setTicketPreview(previewUrl);
+      setCurrentTicketData({ template, data: ticketData });
+    } catch (err) {
+      toast({
+        title: 'Error',
+        description: 'Could not generate ticket. Please try again.',
+        variant: 'destructive',
+      });
+    }
+
+    setTicketLoading(false);
+  };
+
+  const handleDownloadTicket = async () => {
+    if (!currentTicketData) return;
+
+    try {
+      const blob = await generateTicketImage(currentTicketData.template, currentTicketData.data);
+      downloadBlob(blob, `ticket-${currentTicketData.data.registration_id}.png`);
+    } catch (err) {
+      toast({
+        title: 'Error',
+        description: 'Could not download ticket.',
+        variant: 'destructive',
+      });
+    }
+  };
+
+  const closeTicketPreview = () => {
+    if (ticketPreview) {
+      URL.revokeObjectURL(ticketPreview);
+    }
+    setTicketPreview(null);
+    setCurrentTicketData(null);
+  };
+
   if (loading) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
@@ -117,6 +190,17 @@ const Dashboard = () => {
             >
               <Settings className="w-5 h-5" />
               ADMIN PANEL
+            </Link>
+          )}
+
+          {/* Volunteer Link */}
+          {(isVolunteer || isAdmin) && (
+            <Link
+              to="/volunteer"
+              className="flex items-center justify-center gap-2 bg-secondary/30 border border-green-500/30 py-3 rounded font-mono text-green-400 hover:bg-secondary/50 hover:border-green-500 transition-colors"
+            >
+              <QrCode className="w-5 h-5" />
+              VOLUNTEER PANEL
             </Link>
           )}
 
@@ -245,24 +329,39 @@ const Dashboard = () => {
                   {registrations.map((reg) => (
                     <div
                       key={reg.id}
-                      className="flex items-center justify-between p-4 bg-background border border-border rounded"
+                      className="p-4 bg-background border border-border rounded"
                     >
-                      <div className="min-w-0">
-                        <h4 className="font-display text-primary truncate">{reg.ticket?.title || 'Unknown'}</h4>
-                        <p className="text-xs text-muted-foreground font-mono">
-                          {new Date(reg.created_at).toLocaleDateString()}
-                        </p>
+                      <div className="flex items-center justify-between mb-2">
+                        <h4 className="font-display text-primary">{reg.ticket?.title || 'Unknown'}</h4>
+                        <span
+                          className={`text-xs px-2 py-1 rounded font-mono ${reg.status === 'confirmed'
+                            ? 'bg-green-500/20 text-green-500'
+                            : reg.status === 'cancelled'
+                              ? 'bg-red-500/20 text-red-500'
+                              : 'bg-yellow-500/20 text-yellow-500'
+                            }`}
+                        >
+                          {reg.status.toUpperCase()}
+                        </span>
                       </div>
-                      <span
-                        className={`text-xs px-2 py-1 rounded font-mono ${reg.status === 'confirmed'
-                          ? 'bg-green-500/20 text-green-500'
-                          : reg.status === 'cancelled'
-                            ? 'bg-red-500/20 text-red-500'
-                            : 'bg-yellow-500/20 text-yellow-500'
-                          }`}
-                      >
-                        {reg.status.toUpperCase()}
-                      </span>
+                      <div className="flex items-center justify-between text-xs text-muted-foreground font-mono">
+                        <span>{new Date(reg.created_at).toLocaleDateString()}</span>
+                        {reg.registration_id && (
+                          <span className="text-primary bg-primary/10 px-2 py-0.5 rounded tracking-wider">
+                            ID: {reg.registration_id}
+                          </span>
+                        )}
+                      </div>
+                      {reg.status === 'confirmed' && reg.registration_id && (
+                        <button
+                          onClick={() => handleViewTicket(reg)}
+                          disabled={ticketLoading}
+                          className="mt-3 w-full flex items-center justify-center gap-2 px-3 py-2 border border-primary text-primary rounded font-mono text-sm hover:bg-primary/10 disabled:opacity-50"
+                        >
+                          <Eye className="w-4 h-4" />
+                          {ticketLoading ? 'Loading...' : 'View Ticket'}
+                        </button>
+                      )}
                     </div>
                   ))}
                 </div>
@@ -325,6 +424,36 @@ const Dashboard = () => {
       </main>
 
       <Footer />
+
+      {/* Ticket Preview Modal */}
+      {ticketPreview && (
+        <div className="fixed inset-0 bg-black/80 z-50 flex items-center justify-center p-4">
+          <div className="relative max-w-4xl max-h-[90vh] overflow-auto">
+            <button
+              onClick={closeTicketPreview}
+              className="absolute top-2 right-2 p-2 bg-black/50 rounded-full text-white hover:bg-black/70 z-10"
+            >
+              <X className="w-5 h-5" />
+            </button>
+            <img src={ticketPreview} alt="Your Ticket" className="max-w-full h-auto" />
+            <div className="mt-4 flex justify-center gap-3">
+              <button
+                onClick={handleDownloadTicket}
+                className="flex items-center gap-2 bg-primary text-background px-6 py-3 font-display font-bold rounded hover:scale-105 transition-transform"
+              >
+                <Download className="w-5 h-5" />
+                Download Ticket
+              </button>
+              <button
+                onClick={closeTicketPreview}
+                className="flex items-center gap-2 border border-white text-white px-6 py-3 font-mono rounded hover:bg-white/10"
+              >
+                Close
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       <PhoneDialog open={showPhoneDialog} onComplete={handlePhoneComplete} />
     </div>

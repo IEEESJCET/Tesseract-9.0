@@ -115,12 +115,23 @@ const TicketRegistration = () => {
             }
         }
 
+        // Generate 10-digit alphanumeric registration ID
+        const generateRegistrationId = () => {
+            const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+            let result = '';
+            for (let i = 0; i < 10; i++) {
+                result += chars.charAt(Math.floor(Math.random() * chars.length));
+            }
+            return result;
+        };
+
         const { error } = await supabase.from('registrations').insert({
             user_id: user.id,
             ticket_id: ticket.id,
             form_data: formData,
             status: 'pending',
             referred_by: validReferralCode,
+            registration_id: generateRegistrationId(),
         });
 
         if (error) {

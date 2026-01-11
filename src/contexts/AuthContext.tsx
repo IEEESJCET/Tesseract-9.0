@@ -9,6 +9,7 @@ interface AuthContextType {
     profile: Profile | null;
     loading: boolean;
     isAdmin: boolean;
+    isVolunteer: boolean;
     signOut: () => Promise<void>;
     refreshProfile: () => Promise<void>;
 }
@@ -82,6 +83,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
                             phone: currentSession.user.user_metadata?.phone || '',
                             referral_code: null,
                             is_admin: false,
+                            is_volunteer: false,
                         });
                     }
                 }
@@ -125,9 +127,10 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     };
 
     const isAdmin = profile?.is_admin ?? false;
+    const isVolunteer = profile?.is_volunteer ?? false;
 
     return (
-        <AuthContext.Provider value={{ user, session, profile, loading, isAdmin, signOut, refreshProfile }}>
+        <AuthContext.Provider value={{ user, session, profile, loading, isAdmin, isVolunteer, signOut, refreshProfile }}>
             {children}
         </AuthContext.Provider>
     );
