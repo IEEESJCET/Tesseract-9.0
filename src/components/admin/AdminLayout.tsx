@@ -1,7 +1,7 @@
 import { ReactNode, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
-import { LayoutDashboard, Ticket, Users, LogOut, Home, Share2, Menu, X, QrCode, UtensilsCrossed } from 'lucide-react';
+import { LayoutDashboard, Ticket, Users, LogOut, Home, Share2, Menu, X, QrCode, UtensilsCrossed, ShieldCheck } from 'lucide-react';
 
 interface AdminLayoutProps {
   children: ReactNode;
@@ -14,6 +14,7 @@ const navItems = [
   { href: '/admin/referrals', label: 'Referrals', icon: Share2 },
   { href: '/admin/coupons', label: 'Coupons', icon: UtensilsCrossed },
   { href: '/admin/checkin', label: 'Scanners', icon: QrCode },
+  { href: '/admin/verify-payments', label: 'Verify Payments', icon: ShieldCheck },
 ];
 
 export const AdminLayout = ({ children }: AdminLayoutProps) => {
@@ -65,8 +66,8 @@ export const AdminLayout = ({ children }: AdminLayoutProps) => {
                 to={item.href}
                 onClick={closeSidebar}
                 className={`flex items-center gap-3 px-3 py-2 rounded font-mono text-sm transition-colors ${isActive
-                    ? 'bg-primary text-background'
-                    : 'text-primary/70 hover:bg-secondary/50 hover:text-primary'
+                  ? 'bg-primary text-background'
+                  : 'text-primary/70 hover:bg-secondary/50 hover:text-primary'
                   }`}
               >
                 <Icon className="w-4 h-4" />
