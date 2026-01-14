@@ -18,6 +18,7 @@ import AdminReferrals from "./pages/admin/AdminReferrals";
 import AdminTicketTemplate from "./pages/admin/AdminTicketTemplate";
 import AdminCheckin from "./pages/admin/AdminCheckin";
 import AdminCoupons from "./pages/admin/AdminCoupons";
+import AdminPaymentVerification from "./pages/admin/AdminPaymentVerification";
 import VolunteerCheckin from "./pages/volunteer/VolunteerCheckin";
 import VolunteerParticipants from "./pages/volunteer/VolunteerParticipants";
 import NotFound from "./pages/NotFound";
@@ -44,6 +45,7 @@ const App = () => (
             <Route path="/admin/referrals" element={<AdminRoute><AdminReferrals /></AdminRoute>} />
             <Route path="/admin/coupons" element={<AdminRoute><AdminCoupons /></AdminRoute>} />
             <Route path="/admin/checkin" element={<AdminRoute><AdminCheckin /></AdminRoute>} />
+            <Route path="/admin/verify-payments" element={<AdminRoute><AdminPaymentVerification /></AdminRoute>} />
             <Route path="/volunteer" element={<VolunteerRoute><VolunteerCheckin /></VolunteerRoute>} />
             <Route path="/volunteer/participants" element={<VolunteerRoute><VolunteerParticipants /></VolunteerRoute>} />
             <Route path="*" element={<NotFound />} />
