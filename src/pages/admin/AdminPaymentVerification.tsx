@@ -72,7 +72,7 @@ const AdminPaymentVerification = () => {
                     razorpay_payment_id,
                     status,
                     created_at,
-                    profile:profiles(full_name, email),
+                    profile:profiles!fk_registrations_profile(full_name, email),
                     ticket:tickets(title)
                 `)
                 .not('razorpay_order_id', 'is', null)
