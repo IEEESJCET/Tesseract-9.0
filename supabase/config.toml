@@ -8,3 +8,7 @@ verify_jwt = false
 [functions.verify-payment]
 # Disable JWT verification as we verify payment signature manually
 verify_jwt = false
+
+[functions.fetch-order-payments]
+# Disable JWT verification for admin payment verification
+verify_jwt = false
