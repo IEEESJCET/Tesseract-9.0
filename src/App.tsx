@@ -21,39 +21,43 @@ import AdminCoupons from "./pages/admin/AdminCoupons";
 import AdminPaymentVerification from "./pages/admin/AdminPaymentVerification";
 import VolunteerCheckin from "./pages/volunteer/VolunteerCheckin";
 import VolunteerParticipants from "./pages/volunteer/VolunteerParticipants";
+import Workshops from "./pages/Workshops";
+import WorkshopDetails from "./pages/WorkshopDetails";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
 
 const App = () => (
-  <QueryClientProvider client={queryClient}>
-    <TooltipProvider>
-      <Toaster />
-      <Sonner />
-      <BrowserRouter>
-        <AuthProvider>
-          <Routes>
-            <Route path="/" element={<Index />} />
-            <Route path="/login" element={<Login />} />
-            <Route path="/register" element={<Register />} />
-            <Route path="/dashboard" element={<Dashboard />} />
-            <Route path="/tickets/:ticketId/register" element={<TicketRegistration />} />
-            <Route path="/admin" element={<AdminRoute><AdminDashboard /></AdminRoute>} />
-            <Route path="/admin/tickets" element={<AdminRoute><AdminTickets /></AdminRoute>} />
-            <Route path="/admin/tickets/:ticketId/template" element={<AdminRoute><AdminTicketTemplate /></AdminRoute>} />
-            <Route path="/admin/registrations" element={<AdminRoute><AdminRegistrations /></AdminRoute>} />
-            <Route path="/admin/referrals" element={<AdminRoute><AdminReferrals /></AdminRoute>} />
-            <Route path="/admin/coupons" element={<AdminRoute><AdminCoupons /></AdminRoute>} />
-            <Route path="/admin/checkin" element={<AdminRoute><AdminCheckin /></AdminRoute>} />
-            <Route path="/admin/verify-payments" element={<AdminRoute><AdminPaymentVerification /></AdminRoute>} />
-            <Route path="/volunteer" element={<VolunteerRoute><VolunteerCheckin /></VolunteerRoute>} />
-            <Route path="/volunteer/participants" element={<VolunteerRoute><VolunteerParticipants /></VolunteerRoute>} />
-            <Route path="*" element={<NotFound />} />
-          </Routes>
-        </AuthProvider>
-      </BrowserRouter>
-    </TooltipProvider>
-  </QueryClientProvider>
+    <QueryClientProvider client={queryClient}>
+        <TooltipProvider>
+            <Toaster />
+            <Sonner />
+            <BrowserRouter>
+                <AuthProvider>
+                    <Routes>
+                        <Route path="/" element={<Index />} />
+                        <Route path="/login" element={<Login />} />
+                        <Route path="/register" element={<Register />} />
+                        <Route path="/dashboard" element={<Dashboard />} />
+                        <Route path="/tickets/:ticketId/register" element={<TicketRegistration />} />
+                        <Route path="/admin" element={<AdminRoute><AdminDashboard /></AdminRoute>} />
+                        <Route path="/admin/tickets" element={<AdminRoute><AdminTickets /></AdminRoute>} />
+                        <Route path="/admin/tickets/:ticketId/template" element={<AdminRoute><AdminTicketTemplate /></AdminRoute>} />
+                        <Route path="/admin/registrations" element={<AdminRoute><AdminRegistrations /></AdminRoute>} />
+                        <Route path="/admin/referrals" element={<AdminRoute><AdminReferrals /></AdminRoute>} />
+                        <Route path="/admin/coupons" element={<AdminRoute><AdminCoupons /></AdminRoute>} />
+                        <Route path="/admin/checkin" element={<AdminRoute><AdminCheckin /></AdminRoute>} />
+                        <Route path="/admin/verify-payments" element={<AdminRoute><AdminPaymentVerification /></AdminRoute>} />
+                        <Route path="/volunteer" element={<VolunteerRoute><VolunteerCheckin /></VolunteerRoute>} />
+                        <Route path="/volunteer/participants" element={<VolunteerRoute><VolunteerParticipants /></VolunteerRoute>} />
+                        <Route path="/workshops" element={<Workshops />} />
+                        <Route path="/workshops/:id" element={<WorkshopDetails />} />
+                        <Route path="*" element={<NotFound />} />
+                    </Routes>
+                </AuthProvider>
+            </BrowserRouter>
+        </TooltipProvider>
+    </QueryClientProvider>
 );
 
 export default App;

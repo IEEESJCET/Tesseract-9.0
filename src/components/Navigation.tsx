@@ -8,7 +8,11 @@ const navItems = [
   { label: 'GALLERY', href: '#gallery' },
 ];
 
-export const Navigation = () => {
+interface NavigationProps {
+  hideOnMobile?: boolean;
+}
+
+export const Navigation = ({ hideOnMobile = false }: NavigationProps) => {
   const [isOpen, setIsOpen] = useState(false);
   const [activeSection, setActiveSection] = useState('home');
 
@@ -48,7 +52,7 @@ export const Navigation = () => {
       {/* Menu Button */}
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="menu-button"
+        className={`menu-button ${hideOnMobile ? 'hidden md:block' : ''}`}
         aria-label="Toggle navigation menu"
       >
         {isOpen ? (

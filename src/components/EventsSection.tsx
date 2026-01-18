@@ -1,13 +1,22 @@
-import { Lock } from 'lucide-react';
+import { Lock, Laptop, ArrowRight } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 
 const events = [
-  { title: 'TECHNICAL WORKSHOPS', locked: true },
-  { title: 'SPECIAL GUEST', locked: true },
-  { title: 'CULTURAL NIGHT', locked: true },
-  { title: 'TECH TALKS', locked: true },
+  { 
+    title: 'TECHNICAL WORKSHOPS', 
+    locked: false, 
+    path: '/workshops',
+    description: 'Explore our hands-on technical workshops.',
+    icon: Laptop
+  },
+  { title: 'SPECIAL GUEST', locked: true, icon: Lock },
+  { title: 'CULTURAL NIGHT', locked: true, icon: Lock },
+  { title: 'TECH TALKS', locked: true, icon: Lock },
 ];
 
 export const EventsSection = () => {
+  const navigate = useNavigate();
+
   return (
     <section id="events" className="py-20 px-4 relative">
       {/* Background Grid */}
@@ -26,37 +35,63 @@ export const EventsSection = () => {
 
         {/* Event Cards Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {events.map((event, index) => (
-            <div
-              key={index}
-              className="event-card-locked group transition-all duration-300 hover:border-primary/50"
-              style={{ animationDelay: `${index * 0.1}s` }}
-            >
-              {/* Lock Icon */}
-              <div className="flex justify-center mb-4 relative z-10">
-                <div className="p-4 rounded-xl bg-secondary/80 border border-border group-hover:border-primary/50 transition-colors">
-                  <Lock className="w-8 h-8 text-primary/70" />
+          {events.map((event, index) => {
+            const Icon = event.icon;
+            
+            return (
+              <div
+                key={index}
+                className={`group transition-all duration-300 border border-border relative overflow-hidden
+                  ${event.locked 
+                    ? 'event-card-locked hover:border-primary/50' 
+                    : 'glass-card p-6 cursor-pointer hover:border-primary hover:shadow-glow'
+                  }`}
+                style={{ animationDelay: `${index * 0.1}s` }}
+                onClick={() => !event.locked && event.path && navigate(event.path)}
+              >
+                {/* Icon */}
+                <div className="flex justify-center mb-4 relative z-10">
+                  <div className={`p-4 rounded-xl border transition-colors
+                    ${event.locked 
+                      ? 'bg-secondary/80 border-border group-hover:border-primary/50' 
+                      : 'bg-primary/10 border-primary/30 group-hover:bg-primary/20 group-hover:border-primary'
+                    }`}>
+                    <Icon className={`w-8 h-8 transition-colors
+                      ${event.locked ? 'text-primary/70' : 'text-primary'}`} 
+                    />
+                  </div>
                 </div>
+
+                {/* Event Title */}
+                <h3 className="text-lg font-display font-semibold text-primary tracking-wide mb-2 relative z-10 text-center">
+                  {event.title}
+                </h3>
+
+                {/* Description */}
+                <p className="text-muted-foreground text-sm relative z-10 text-center">
+                  {event.locked ? 'Event details will be revealed soon...' : event.description}
+                </p>
+
+                {/* Action Indicator */}
+                {!event.locked && (
+                  <div className="mt-4 flex justify-center relatives z-10">
+                    <div className="flex items-center gap-2 text-xs font-mono text-primary/80 group-hover:text-primary transition-colors">
+                      [ ACCESS GRANTED ] <ArrowRight className="w-3 h-3 animate-pulse" />
+                    </div>
+                  </div>
+                )}
+
+                {/* Progress Line for Locked */}
+                {event.locked && (
+                  <div className="mt-4 relative z-10">
+                    <div className="h-0.5 bg-border rounded-full overflow-hidden">
+                      <div className="h-full w-1/4 bg-primary rounded-full" />
+                    </div>
+                  </div>
+                )}
               </div>
-
-              {/* Event Title */}
-              <h3 className="text-lg font-display font-semibold text-primary tracking-wide mb-2 relative z-10">
-                {event.title}
-              </h3>
-
-              {/* Description */}
-              <p className="text-muted-foreground text-sm relative z-10">
-                Event details will be revealed soon...
-              </p>
-
-              {/* Progress Line */}
-              <div className="mt-4 relative z-10">
-                <div className="h-0.5 bg-border rounded-full overflow-hidden">
-                  <div className="h-full w-1/4 bg-primary rounded-full" />
-                </div>
-              </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       </div>
     </section>
