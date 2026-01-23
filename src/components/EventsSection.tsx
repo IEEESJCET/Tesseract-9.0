@@ -1,17 +1,23 @@
-import { Lock, Laptop, ArrowRight } from 'lucide-react';
+import { Lock, Laptop, ArrowRight, BrainCircuit, Brain, Wand } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
 const events = [
-  { 
-    title: 'TECHNICAL WORKSHOPS', 
-    locked: false, 
+  {
+    title: 'TECHNICAL WORKSHOPS',
+    locked: false,
     path: '/workshops',
     description: 'Explore our hands-on technical workshops.',
     icon: Laptop
   },
+  {
+    title: 'MENTALISM',
+    locked: false,
+    path: '/mentalism',
+    description: 'Think youre in control? Think again',
+    icon: Brain
+  },
   { title: 'SPECIAL GUEST', locked: true, icon: Lock },
   { title: 'CULTURAL NIGHT', locked: true, icon: Lock },
-  { title: 'TECH TALKS', locked: true, icon: Lock },
 ];
 
 export const EventsSection = () => {
@@ -37,13 +43,13 @@ export const EventsSection = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {events.map((event, index) => {
             const Icon = event.icon;
-            
+
             return (
               <div
                 key={index}
                 className={`group transition-all duration-300 border border-border relative overflow-hidden
-                  ${event.locked 
-                    ? 'event-card-locked hover:border-primary/50' 
+                  ${event.locked
+                    ? 'event-card-locked hover:border-primary/50'
                     : 'glass-card p-6 cursor-pointer hover:border-primary hover:shadow-glow'
                   }`}
                 style={{ animationDelay: `${index * 0.1}s` }}
@@ -52,12 +58,12 @@ export const EventsSection = () => {
                 {/* Icon */}
                 <div className="flex justify-center mb-4 relative z-10">
                   <div className={`p-4 rounded-xl border transition-colors
-                    ${event.locked 
-                      ? 'bg-secondary/80 border-border group-hover:border-primary/50' 
+                    ${event.locked
+                      ? 'bg-secondary/80 border-border group-hover:border-primary/50'
                       : 'bg-primary/10 border-primary/30 group-hover:bg-primary/20 group-hover:border-primary'
                     }`}>
                     <Icon className={`w-8 h-8 transition-colors
-                      ${event.locked ? 'text-primary/70' : 'text-primary'}`} 
+                      ${event.locked ? 'text-primary/70' : 'text-primary'}`}
                     />
                   </div>
                 </div>
