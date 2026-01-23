@@ -69,12 +69,14 @@ export const Countdown = () => {
         {/* Register Button */}
         <div className="relative group">
           <div className="absolute -inset-1 bg-primary rounded-lg blur opacity-25 group-hover:opacity-75 transition duration-1000 group-hover:duration-200"></div>
-          <button
-            onClick={() => navigate('/register')}
+          <a
+            href="https://app.makemypass.com/event/tesseract-9-0"
+            target="_blank"
+            rel="noopener noreferrer"
             className="relative glow-button bg-primary text-background px-3 py-2 md:px-8 md:py-4 text-xs md:text-2xl font-bold font-display tracking-wider rounded-lg hover:scale-105 transition-transform flex items-center gap-2 whitespace-nowrap"
           >
             REGISTER NOW
-          </button>
+          </a>
           {/* Pixel Art Invader Decoration */}
           {/* <div className="absolute -top-12 left-1/2 -translate-x-1/2 text-primary opacity-80 animate-bounce hidden md:block">
             <svg width="40" height="40" viewBox="0 0 24 24" fill="currentColor">

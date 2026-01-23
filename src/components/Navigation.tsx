@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { Menu, X, LogIn } from 'lucide-react';
+import { Menu, X } from 'lucide-react';
 
 const navItems = [
   { label: 'HOME', href: '#home' },
@@ -9,8 +8,11 @@ const navItems = [
   { label: 'GALLERY', href: '#gallery' },
 ];
 
-export const Navigation = () => {
-  const navigate = useNavigate();
+interface NavigationProps {
+  hideOnMobile?: boolean;
+}
+
+export const Navigation = ({ hideOnMobile = false }: NavigationProps) => {
   const [isOpen, setIsOpen] = useState(false);
   const [activeSection, setActiveSection] = useState('home');
 
@@ -43,17 +45,14 @@ export const Navigation = () => {
     }
   };
 
-  const handleLoginClick = () => {
-    setIsOpen(false);
-    navigate('/login');
-  };
+
 
   return (
     <>
       {/* Menu Button */}
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="menu-button"
+        className={`menu-button ${hideOnMobile ? 'hidden md:block' : ''}`}
         aria-label="Toggle navigation menu"
       >
         {isOpen ? (
@@ -77,8 +76,8 @@ export const Navigation = () => {
                   <button
                     onClick={() => handleNavClick(item.href)}
                     className={`nav-link ${activeSection === item.href.slice(1)
-                        ? 'text-primary glow-text'
-                        : ''
+                      ? 'text-primary glow-text'
+                      : ''
                       }`}
                   >
                     <span className="text-primary/60">&gt;</span>
@@ -86,15 +85,6 @@ export const Navigation = () => {
                   </button>
                 </li>
               ))}
-              <li>
-                <button
-                  onClick={handleLoginClick}
-                  className="nav-link group"
-                >
-                  <LogIn className="w-5 h-5 md:w-6 md:h-6 text-primary/60 group-hover:text-primary transition-colors" />
-                  LOGIN
-                </button>
-              </li>
             </ul>
           </nav>
         </div>
