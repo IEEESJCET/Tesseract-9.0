@@ -28,5 +28,17 @@ export const workshops: Workshop[] = [
             }
         ],
         image: "/hack-the-system.jpg"
+    },
+    {
+        id: "ai-made-simple",
+        title: "AI MADE SIMPLE",
+        description: "“Artificial intelligence is not a substitute for human intelligence, but a powerful tool to amplify it.” ~ Fei-Fei Li\n\n🤖 AI MADE SIMPLE 🤖\nAutomating Arduino with Machine Learning\n\nAs part of TESSERACT 9.0, the flagship event of IEEE SB SJCET, this hands-on workshop breaks down AI into practical, real-world applications. Learn how machine learning can seamlessly integrate with Arduino to build smarter, automated systems.",
+        speakers: [
+            {
+                name: "Pravitha P",
+                designation: "STEM & AI Educator, HowNWhy Education"
+            }
+        ],
+        image: "/ai-made-simple.jpeg"
     }
 ];
