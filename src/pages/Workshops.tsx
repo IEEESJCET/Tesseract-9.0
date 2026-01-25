@@ -22,9 +22,12 @@ const Workshops = () => {
                 </div>
 
                 <div className="flex flex-col items-center justify-center mb-16">
-                    <h1 className="text-4xl md:text-5xl font-bold text-primary mb-12 text-center tracking-widest">
+                    <h1 className="text-4xl md:text-5xl font-bold text-primary mb-4 text-center tracking-widest">
                         <span className="text-primary/80">&gt;</span> WORKSHOPS
                     </h1>
+                    <p className="text-lg md:text-xl text-primary/70 mb-12 text-center tracking-wider font-medium">
+                        February 1st, 2026
+                    </p>
 
                     <div className="w-full max-w-3xl space-y-6">
                         {workshops.map((workshop, index) => (

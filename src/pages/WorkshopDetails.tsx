@@ -34,7 +34,10 @@ const WorkshopDetails = () => {
                     <h1 className="text-3xl md:text-4xl text-primary font-bold uppercase tracking-wide mb-2">
                         {workshop.title}
                     </h1>
-                    <div className="w-24 h-1 bg-primary rounded-full shadow-[0_0_10px_rgba(34,197,94,0.6)]"></div>
+                    <div className="w-24 h-1 bg-primary rounded-full shadow-[0_0_10px_rgba(34,197,94,0.6)] mb-3"></div>
+                    <p className="text-lg md:text-xl text-primary/70 tracking-wider font-medium">
+                        February 1st, 2026
+                    </p>
                 </div>
 
                 {/* Content Grid */}
