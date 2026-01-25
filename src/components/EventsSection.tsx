@@ -20,7 +20,7 @@ const events = [
   {
     title: 'CULTURAL NIGHT',
     locked: false,
-    path: '',
+    path: '/cultural',
     description: 'Expect chaos. Experience culture.',
     image: '/cultural.png'
   },

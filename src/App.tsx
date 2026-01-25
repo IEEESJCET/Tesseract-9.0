@@ -23,6 +23,7 @@ import VolunteerCheckin from "./pages/volunteer/VolunteerCheckin";
 import VolunteerParticipants from "./pages/volunteer/VolunteerParticipants";
 import Workshops from "./pages/Workshops";
 import Mentalism from "./pages/Mentalism";
+import Cultural from "./pages/Cultural";
 import WorkshopDetails from "./pages/WorkshopDetails";
 import NotFound from "./pages/NotFound";
 
@@ -53,6 +54,7 @@ const App = () => (
                         <Route path="/volunteer/participants" element={<VolunteerRoute><VolunteerParticipants /></VolunteerRoute>} />
                         <Route path="/workshops" element={<Workshops />} />
                         <Route path="/mentalism" element={<Mentalism />} />
+                        <Route path="/cultural" element={<Cultural />} />
                         <Route path="/workshops/:id" element={<WorkshopDetails />} />
                         <Route path="*" element={<NotFound />} />
                     </Routes>
