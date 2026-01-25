@@ -25,7 +25,7 @@ export const EventsSection = () => {
 
   return (
     <section id="events" className="py-20 px-4 relative">
-      {/* Background Grid */}
+
       <div className="absolute inset-0 bg-grid-pattern bg-grid opacity-20 pointer-events-none" />
 
       <div className="container mx-auto max-w-4xl relative z-10">
