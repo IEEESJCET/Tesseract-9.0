@@ -7,17 +7,23 @@ const events = [
     locked: false,
     path: '/workshops',
     description: 'Explore our hands-on technical workshops.',
-    icon: Laptop
+    image: '/technical-workshop.png'
   },
   {
     title: 'MENTALISM',
     locked: false,
     path: '/mentalism',
     description: 'Think youre in control? Think again',
-    icon: Brain
+    image: '/mentalism-frame.png'
   },
   { title: 'SPECIAL GUEST', locked: true, icon: Lock },
-  { title: 'CULTURAL NIGHT', locked: true, icon: Lock },
+  {
+    title: 'CULTURAL NIGHT',
+    locked: false,
+    path: '',
+    description: 'Expect chaos. Experience culture.',
+    image: '/cultural.png'
+  },
 ];
 
 export const EventsSection = () => {
@@ -55,18 +61,30 @@ export const EventsSection = () => {
                 style={{ animationDelay: `${index * 0.1}s` }}
                 onClick={() => !event.locked && event.path && navigate(event.path)}
               >
-                {/* Icon */}
-                <div className="flex justify-center mb-4 relative z-10">
-                  <div className={`p-4 rounded-xl border transition-colors
-                    ${event.locked
-                      ? 'bg-secondary/80 border-border group-hover:border-primary/50'
-                      : 'bg-primary/10 border-primary/30 group-hover:bg-primary/20 group-hover:border-primary'
-                    }`}>
-                    <Icon className={`w-8 h-8 transition-colors
-                      ${event.locked ? 'text-primary/70' : 'text-primary'}`}
-                    />
+                {/* Icon or Large Image */}
+                {event.image ? (
+                  <div className="mb-4 relative z-10 -mx-6 -mt-6">
+                    <div className="border border-primary/30 overflow-hidden">
+                      <img
+                        src={event.image}
+                        alt={event.title}
+                        className="w-full h-48 object-cover opacity-90 group-hover:opacity-100 transition-opacity"
+                      />
+                    </div>
                   </div>
-                </div>
+                ) : (
+                  <div className="flex justify-center mb-4 relative z-10">
+                    <div className={`p-4 rounded-xl border transition-colors
+                      ${event.locked
+                        ? 'bg-secondary/80 border-border group-hover:border-primary/50'
+                        : 'bg-primary/10 border-primary/30 group-hover:bg-primary/20 group-hover:border-primary'
+                      }`}>
+                      <Icon className={`w-8 h-8 transition-colors
+                        ${event.locked ? 'text-primary/70' : 'text-primary'}`}
+                      />
+                    </div>
+                  </div>
+                )}
 
                 {/* Event Title */}
                 <h3 className="text-lg font-display font-semibold text-primary tracking-wide mb-2 relative z-10 text-center">
